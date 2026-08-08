@@ -29,7 +29,16 @@ public class CategorieService {
         return toResponse(savedCategorie);
     }
 
+    public List<CategorieResponse> createCategories(List<CategorieRequest> categorieRequests) {
+        return categorieRequests.stream()
+                .map(this::createCategorie)
+                .toList();
+    }
+
     public Optional<CategorieResponse> getCategorieById(UUID id) {
+        if (!categorieRepository.existsById(id)) {
+            throw new RuntimeException("Category not found with id: " + id);
+        }
         return categorieRepository.findById(id).map(this::toResponse);
     }
 
@@ -80,6 +89,11 @@ public class CategorieService {
             categorie.getCreatedAt(),
             categorie.getUpdatedAt()
         );
+    }
+
+    public Categorie getCategorieEntityById(UUID categoryId) {
+        return categorieRepository.findById(categoryId)
+                .orElseThrow(() -> new RuntimeException("Category not found with id: " + categoryId));
     }
 }
 

@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import com.biblio.app.author.service.AuthorService;
+import com.biblio.app.book.dto.BookRequest;
 import com.biblio.app.book.dto.BookResponse;
 import com.biblio.app.book.entity.Book;
 import com.biblio.app.book.repository.BookRepository;
@@ -33,7 +34,7 @@ public class BookService {
                 .publisher(book.getPublisher())
                 .language(book.getLanguage())
                 .author(book.getAuthor() != null ? authorService.getAuthorById(book.getAuthor().getId()) : null)
-                .categoryId(book.getCategory() != null ? categorieService.getCategorieById(book.getCategorie().getId()) : null)
+                .category(book.getCategory() != null ? categorieService.getCategorieById(book.getCategory().getId()).orElse(null): null)
                 .createdAt(book.getCreatedAt())
                 .updatedAt(book.getUpdatedAt())
                 .build();
@@ -64,6 +65,42 @@ public class BookService {
         return bookRepository.existsByTitle(title);
     }
 
+    public Optional<BookResponse> createBook(BookRequest book) {
+
+        if(book.getAuthorId() == null || !authorService.existsById(book.getAuthorId())) {
+            throw new RuntimeException("Author not found ");
+        }
+        if(book.getCategoryId() == null || !categorieService.existsById(book.getCategoryId())) {
+            throw new RuntimeException("Category not found");
+        }
+        if(book.getAvailableCopies() != null && book.getTotalCopies() != null && book.getAvailableCopies() > book.getTotalCopies()) {
+            throw new RuntimeException("Available copies cannot be greater than total copies");
+        }
+
+        if(book.getAvailableCopies() < 0) {
+            book.setAvailableCopies(0);
+        }
+
+        if(book.getTotalCopies() <= 0) {
+            throw new RuntimeException("Total copies cannot be negative");
+        }
+
+        Book newBook = new Book();
+        newBook.setTitle(book.getTitle());
+        newBook.setDescription(book.getDescription());
+        newBook.setPublicationYear(book.getPublicationYear());
+        newBook.setAvailableCopies(book.getAvailableCopies());
+        newBook.setTotalCopies(book.getTotalCopies());
+        newBook.setIsbn(book.getIsbn());
+        newBook.setPublisher(book.getPublisher());
+        newBook.setLanguage(book.getLanguage());
+        newBook.setAuthor(authorService.getAuthorEntityById(book.getAuthorId()));
+        newBook.setCategory(categorieService.getCategorieEntityById(book.getCategoryId()));
+        
+        Book savedBook = bookRepository.save(newBook);
+        return Optional.of(toBookResponse(savedBook));
+    }
+
     public BookResponse updateBook(UUID id, Book book) {
         Book existingBook = bookRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Book not found with id: " + id));
@@ -80,7 +117,7 @@ public class BookService {
         if (book.getAvailableCopies() != null && book.getAvailableCopies() >= 0 && book.getAvailableCopies() <= existingBook.getTotalCopies()) {
             existingBook.setAvailableCopies(book.getAvailableCopies());
         }
-        if (book.getTotalCopies() != null && book.getTotalCopies() >= 0) {
+        if (book.getTotalCopies() != null && book.getTotalCopies() > 0) {
             existingBook.setTotalCopies(book.getTotalCopies());
         }
         if (book.getIsbn() != null && !book.getIsbn().isEmpty()) {

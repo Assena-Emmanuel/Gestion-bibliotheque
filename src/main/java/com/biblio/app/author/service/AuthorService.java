@@ -52,6 +52,23 @@ public class AuthorService {
         return toResponse(author);
     }
 
+    public Author getAuthorEntityById(UUID id) {
+        return authorRepository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "Author not found with id: " + id
+                        )
+                );
+    }
+
+    // save more authors
+    public List<AuthorResponse> createAuthors(List<AuthorRequest> requests) {
+        return requests.stream()
+                .map(this::createAuthor)
+                .toList();
+    }
+
+
     // public AuthorResponse updateAuthor(UUID id, AuthorRequest authorRequest) {
     //     Author existingAuthor = authorRepository.findById(id)
     //             .orElseThrow(() -> new RuntimeException("Author not found with id: " + id));

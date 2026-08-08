@@ -1,7 +1,5 @@
 package com.biblio.app.categories.controller;
 
-import com.biblio.app.author.controller.AuthorController;
-import com.biblio.app.author.repository.AuthorRepository;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 @AllArgsConstructor
 @RequestMapping("/api/categories")
 public class CategorieController {
-    private final AuthorRepository authorRepository;
     private final CategorieService categorieService;
 
 
@@ -61,6 +58,15 @@ public class CategorieController {
             true,
             "Categorie created successfully",
             categorieService.createCategorie(categorieRequest)
+        );
+    }
+
+    @PostMapping("/more")
+    public ResponseDto postMoreCategories(@RequestBody java.util.List<CategorieRequest> categorieRequests) {
+        return new ResponseDto(
+            true,
+            "More categories created successfully",
+            categorieService.createCategories(categorieRequests)
         );
     }
 

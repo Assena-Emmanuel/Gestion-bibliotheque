@@ -25,13 +25,15 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "books")
-@AllArgsConstructor 
-@NoArgsConstructor 
-@Setter 
-@Getter @Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Setter
+@Getter
+@Builder
 public class Book {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(nullable = false)
@@ -42,25 +44,25 @@ public class Book {
 
     private String description;
 
-    private String publisher; // Editeur
+    private String publisher;
 
-    private Integer publicationYear; // Année de publication
+    private Integer publicationYear;
 
-    private String language; // Langue
-
-    @Column(nullable = false)
-    private Integer availableCopies; // Nombre d'exemplaires disponibles
+    private String language;
 
     @Column(nullable = false)
-    private Integer totalCopies; // Nombre total d'exemplaires
+    private Integer availableCopies;
+
+    @Column(nullable = false)
+    private Integer totalCopies;
 
     @ManyToOne
     @JoinColumn(name = "author_id", nullable = false)
-    private Author author; // Auteur
+    private Author author;
 
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
-    private Categorie category; // Catégorie
+    private Categorie category;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
@@ -68,5 +70,4 @@ public class Book {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
-
 }

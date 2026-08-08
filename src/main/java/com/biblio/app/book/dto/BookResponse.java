@@ -27,7 +27,7 @@ public class BookResponse {
     private Integer publicationYear; // Année de publication
     private String language; // Langue
     private AuthorResponse author; // Auteur
-    private CategorieResponse categoryId; // ID de la catégorie
+    private CategorieResponse category; // ID de la catégorie
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

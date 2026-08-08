@@ -10,6 +10,7 @@ import com.biblio.app.common.response.ResponseDto;
 
 import lombok.AllArgsConstructor;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
@@ -20,8 +21,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-
-
 
 
 @RestController
@@ -56,6 +55,16 @@ public class AuthorController {
             authorService.createAuthor(authorRequest)
         );
     }
+
+    @PostMapping("/more")
+    public ResponseDto postMoreAuthors(@RequestBody List<AuthorRequest> param) {
+        return new ResponseDto(
+            true,
+            "More authors retrieved successfully",
+            authorService.createAuthors(param)
+        );
+    }
+    
 
     @PatchMapping("/{id}")
     public ResponseEntity<AuthorResponse> update(
