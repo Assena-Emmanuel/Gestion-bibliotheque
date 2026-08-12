@@ -12,6 +12,7 @@ import com.biblio.app.book.dto.BookResponse;
 import com.biblio.app.book.entity.Book;
 import com.biblio.app.book.repository.BookRepository;
 import com.biblio.app.categories.service.CategorieService;
+import com.biblio.app.common.constant.ApiMessages;
 
 import lombok.AllArgsConstructor;
 
@@ -52,7 +53,7 @@ public class BookService {
 
     public void deleteBookById(UUID id) {
         if (!bookRepository.existsById(id)) {
-            throw new RuntimeException("Book not found with id: " + id);
+            throw new RuntimeException(ApiMessages.bookNotFoundWithId(id));
         }
         bookRepository.deleteById(id);
     }
@@ -68,13 +69,13 @@ public class BookService {
     public Optional<BookResponse> createBook(BookRequest book) {
 
         if(book.getAuthorId() == null || !authorService.existsById(book.getAuthorId())) {
-            throw new RuntimeException("Author not found ");
+            throw new RuntimeException(ApiMessages.AUTHOR_NOT_FOUND);
         }
         if(book.getCategoryId() == null || !categorieService.existsById(book.getCategoryId())) {
-            throw new RuntimeException("Category not found");
+            throw new RuntimeException(ApiMessages.CATEGORY_NOT_FOUND);
         }
         if(book.getAvailableCopies() != null && book.getTotalCopies() != null && book.getAvailableCopies() > book.getTotalCopies()) {
-            throw new RuntimeException("Available copies cannot be greater than total copies");
+            throw new RuntimeException(ApiMessages.AVAILABLE_COPIES_EXCEED_TOTAL);
         }
 
         if(book.getAvailableCopies() < 0) {
@@ -82,7 +83,11 @@ public class BookService {
         }
 
         if(book.getTotalCopies() <= 0) {
-            throw new RuntimeException("Total copies cannot be negative");
+            throw new RuntimeException(ApiMessages.TOTAL_COPIES_NEGATIVE);
+        }
+
+        if(existsByTitle(book.getTitle())){
+            throw new RuntimeException(ApiMessages.BOOK_ALREADY_EXISTS);
         }
 
         Book newBook = new Book();
@@ -101,9 +106,9 @@ public class BookService {
         return Optional.of(toBookResponse(savedBook));
     }
 
-    public BookResponse updateBook(UUID id, Book book) {
+    public BookResponse updateBook(UUID id, BookRequest book) {
         Book existingBook = bookRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Book not found with id: " + id));
+                .orElseThrow(() -> new RuntimeException(ApiMessages.bookNotFoundWithId(id)));
 
         if (book.getTitle() != null && !book.getTitle().isEmpty()) {
             existingBook.setTitle(book.getTitle());
@@ -129,11 +134,11 @@ public class BookService {
         if (book.getLanguage() != null && !book.getLanguage().isEmpty()) {
             existingBook.setLanguage(book.getLanguage());
         }
-        if (book.getAuthor() != null) {
-            existingBook.setAuthor(book.getAuthor());
+        if (book.getAuthorId() != null) {
+            existingBook.setAuthor(authorService.getAuthorEntityById(book.getAuthorId()));
         }
-        if (book.getCategory() != null) {
-            existingBook.setCategory(book.getCategory());
+        if (book.getCategoryId() != null) {
+            existingBook.setCategory(categorieService.getCategorieEntityById(book.getCategoryId()));
         }
 
         Book updatedBook = bookRepository.save(existingBook);

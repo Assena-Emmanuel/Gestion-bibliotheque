@@ -7,6 +7,7 @@ import com.biblio.app.author.dto.AuthorRequest;
 import com.biblio.app.author.dto.AuthorResponse;
 import com.biblio.app.author.service.AuthorService;
 import com.biblio.app.common.response.ResponseDto;
+import com.biblio.app.common.constant.ApiMessages;
 
 import lombok.AllArgsConstructor;
 
@@ -33,7 +34,7 @@ public class AuthorController {
     public ResponseDto getAuthors() {
         return new ResponseDto(
             true, 
-            "Authors retrieved successfully", 
+            ApiMessages.AUTHORS_RETRIEVED,
             authorService.getAuthors());
         
     }
@@ -42,7 +43,7 @@ public class AuthorController {
     public ResponseDto getAuthor(@PathVariable UUID id) {
         return new ResponseDto(
             true,
-            "Author retrieved successfully",
+            ApiMessages.AUTHOR_RETRIEVED,
             authorService.getAuthorById(id)
         );
     }
@@ -51,7 +52,7 @@ public class AuthorController {
     public ResponseDto postAuthor(@RequestBody AuthorRequest authorRequest) {
         return new ResponseDto(
             true,
-            "Author created successfully",
+            ApiMessages.AUTHOR_CREATED,
             authorService.createAuthor(authorRequest)
         );
     }
@@ -60,7 +61,7 @@ public class AuthorController {
     public ResponseDto postMoreAuthors(@RequestBody List<AuthorRequest> param) {
         return new ResponseDto(
             true,
-            "More authors retrieved successfully",
+            ApiMessages.AUTHORS_CREATED,
             authorService.createAuthors(param)
         );
     }
@@ -91,14 +92,14 @@ public class AuthorController {
         if (!authorService.existsById(id)) {
             return new ResponseDto(
                 false,
-                "Author not found with id: " + id,
+                ApiMessages.authorNotFoundWithId(id),
                 null
             );
         }
         authorService.deleteAuthorById(id);
         return new ResponseDto(
             true,
-            "Author deleted successfully",
+            ApiMessages.AUTHOR_DELETED,
             null
         );
     }
@@ -108,7 +109,7 @@ public class AuthorController {
         authorService.deleteAllAuthors();
         return new ResponseDto(
             true,
-            "All authors deleted successfully",
+            ApiMessages.ALL_AUTHORS_DELETED,
             null
         );
     }

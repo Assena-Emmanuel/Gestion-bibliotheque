@@ -1,9 +1,11 @@
 package com.biblio.app.book.controller;
-
 import java.util.UUID;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,38 +15,57 @@ import org.springframework.web.bind.annotation.RestController;
 import com.biblio.app.book.dto.BookRequest;
 import com.biblio.app.book.service.BookService;
 import com.biblio.app.common.response.ResponseDto;
+import com.biblio.app.common.constant.ApiMessages;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
+
 
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/books")
+@Tag(
+    name="Books",
+    description = "Gestion des livres de la bibliothèque"
+)
 public class BookController {
     private final BookService bookService;
 
     @GetMapping
+    @Operation(
+        summary = "Récupérer tous les livres",
+        description = "Retourne la liste de tous les livres enregistrés dans la bibliothèque"
+    )
     public ResponseDto getBooks() {
         return new ResponseDto(
             true, 
-            "Books retrieved successfully", 
+            ApiMessages.BOOKS_RETRIEVED,
             bookService.getAllBooks());
         
     }
 
-    @PostMapping
-    public ResponseDto postBook(@RequestBody BookRequest book) {
-        if(bookService.existsByTitle(book.getTitle())) {
-            return new ResponseDto(
-                false,
-                "Book already exists with title: " + book.getTitle(),
-                null
-            );
-        }
-        
+    @GetMapping("{id}")
+    public ResponseDto getMethodName(@PathVariable UUID id) {
         return new ResponseDto(
             true,
-            "Book created successfully",
+            ApiMessages.BOOK_RETRIEVED,
+            bookService.getBookById(id)
+        );
+    }
+    
+
+    @PostMapping
+    public ResponseEntity<ResponseDto> postBook(@RequestBody BookRequest book) {
+       
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .body(
+                new ResponseDto(
+            true,
+            ApiMessages.BOOK_CREATED,
             bookService.createBook(book)
+            )
         );
     }
 
@@ -53,8 +74,17 @@ public class BookController {
         bookService.deleteBookById(id);
         return new ResponseDto(
             true,
-            "Book already deleted",
+            ApiMessages.BOOK_DELETED,
             null
+        );
+    }
+
+    @PatchMapping("{id}")
+    public ResponseDto updateBook(@PathVariable UUID id, @RequestBody BookRequest request){
+        return new ResponseDto(
+            true,
+            ApiMessages.BOOK_UPDATED,
+            bookService.updateBook(id, request)
         );
     }
 

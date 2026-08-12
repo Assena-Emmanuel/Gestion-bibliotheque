@@ -9,6 +9,7 @@ import com.biblio.app.author.dto.AuthorRequest;
 import com.biblio.app.author.dto.AuthorResponse;
 import com.biblio.app.author.entity.Author;
 import com.biblio.app.author.repository.AuthorRepository;
+import com.biblio.app.common.constant.ApiMessages;
 
 import lombok.AllArgsConstructor;
 
@@ -29,7 +30,7 @@ public class AuthorService {
 
         if (authorRepository.existsByName(request.getName())) {
             throw new RuntimeException(
-                "Author already exists with name: " + request.getName()
+                ApiMessages.authorAlreadyExistsWithName(request.getName())
             );
         }
 
@@ -48,7 +49,7 @@ public class AuthorService {
 
     public AuthorResponse getAuthorById(UUID id) {
         Author author = authorRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Author not found with id: " + id));
+                .orElseThrow(() -> new RuntimeException(ApiMessages.authorNotFoundWithId(id)));
         return toResponse(author);
     }
 
@@ -56,7 +57,7 @@ public class AuthorService {
         return authorRepository.findById(id)
                 .orElseThrow(() ->
                         new RuntimeException(
-                                "Author not found with id: " + id
+                                ApiMessages.authorNotFoundWithId(id)
                         )
                 );
     }
@@ -87,7 +88,7 @@ public class AuthorService {
 
         Author author = authorRepository.findById(id)
                 .orElseThrow(() ->
-                        new RuntimeException("Author not found with id: " + id)
+                        new RuntimeException(ApiMessages.authorNotFoundWithId(id))
                 );
 
         if (request.getName() != null) {
@@ -119,7 +120,7 @@ public class AuthorService {
         Author author = authorRepository.findAll().stream()
                 .filter(a -> a.getName().equalsIgnoreCase(name))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Author not found with name: " + name));
+                .orElseThrow(() -> new RuntimeException(ApiMessages.authorNotFoundWithName(name)));
         return toResponse(author);
     }
 

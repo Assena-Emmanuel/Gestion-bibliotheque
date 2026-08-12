@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.biblio.app.categories.dto.CategorieRequest;
 import com.biblio.app.categories.service.CategorieService;
 import com.biblio.app.common.response.ResponseDto;
+import com.biblio.app.common.constant.ApiMessages;
 
 import lombok.AllArgsConstructor;
 
@@ -31,7 +32,7 @@ public class CategorieController {
     public ResponseDto getMethodName() {
         return new ResponseDto(
             true,
-            "Categories retrieved successfully",
+            ApiMessages.CATEGORIES_RETRIEVED,
             categorieService.getAllCategories()
         );
     }
@@ -40,7 +41,7 @@ public class CategorieController {
     public ResponseDto getCategorieById(@PathVariable UUID id) {
         return new ResponseDto(
             true,
-            "Categorie retrieved successfully",
+            ApiMessages.CATEGORY_RETRIEVED,
             categorieService.getCategorieById(id)
         );
     }
@@ -50,13 +51,13 @@ public class CategorieController {
         if(categorieService.existsByName(categorieRequest.getName())) {
             return new ResponseDto(
                 false,
-                "Categorie already exists with name: " + categorieRequest.getName(),
+                ApiMessages.categoryAlreadyExistsWithName(categorieRequest.getName()),
                 null
             );
         }
         return new ResponseDto(
             true,
-            "Categorie created successfully",
+            ApiMessages.CATEGORY_CREATED,
             categorieService.createCategorie(categorieRequest)
         );
     }
@@ -65,7 +66,7 @@ public class CategorieController {
     public ResponseDto postMoreCategories(@RequestBody java.util.List<CategorieRequest> categorieRequests) {
         return new ResponseDto(
             true,
-            "More categories created successfully",
+            ApiMessages.CATEGORIES_CREATED,
             categorieService.createCategories(categorieRequests)
         );
     }
@@ -75,7 +76,7 @@ public class CategorieController {
         categorieService.deleteCategorieById(id);
         return new ResponseDto(
             true,
-            "Categorie deleted successfully",
+            ApiMessages.CATEGORY_DELETED,
             null
         );
     }   
@@ -84,7 +85,7 @@ public class CategorieController {
     public ResponseDto updateCategorie(@PathVariable UUID id, @RequestBody CategorieRequest categorieRequest) {
         return new ResponseDto(
             true,
-            "Categorie updated successfully",
+            ApiMessages.CATEGORY_UPDATED,
             categorieService.updateCategorie(id, categorieRequest)
         ); 
     }

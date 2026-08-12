@@ -10,6 +10,7 @@ import com.biblio.app.categories.dto.CategorieRequest;
 import com.biblio.app.categories.dto.CategorieResponse;
 import com.biblio.app.categories.entity.Categorie;
 import com.biblio.app.categories.repository.CategorieRepository;
+import com.biblio.app.common.constant.ApiMessages;
 
 import lombok.AllArgsConstructor;
 
@@ -37,7 +38,7 @@ public class CategorieService {
 
     public Optional<CategorieResponse> getCategorieById(UUID id) {
         if (!categorieRepository.existsById(id)) {
-            throw new RuntimeException("Category not found with id: " + id);
+            throw new RuntimeException(ApiMessages.categoryNotFoundWithId(id));
         }
         return categorieRepository.findById(id).map(this::toResponse);
     }
@@ -50,7 +51,7 @@ public class CategorieService {
 
     public void deleteCategorieById(UUID id) {
         if (!categorieRepository.existsById(id)) {
-            throw new RuntimeException("Category not found with id: " + id);
+            throw new RuntimeException(ApiMessages.categoryNotFoundWithId(id));
         }
         categorieRepository.deleteById(id);
     }
@@ -65,7 +66,7 @@ public class CategorieService {
 
     public CategorieResponse updateCategorie(UUID id, CategorieRequest categorieRequest) {
         Categorie existingCategorie = categorieRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Category not found with id: " + id));
+                .orElseThrow(() -> new RuntimeException(ApiMessages.categoryNotFoundWithId(id)));
 
         if(categorieRequest.getName() != null && !categorieRequest.getName().isEmpty()) {
             existingCategorie.setName(categorieRequest.getName());
@@ -93,7 +94,6 @@ public class CategorieService {
 
     public Categorie getCategorieEntityById(UUID categoryId) {
         return categorieRepository.findById(categoryId)
-                .orElseThrow(() -> new RuntimeException("Category not found with id: " + categoryId));
+                .orElseThrow(() -> new RuntimeException(ApiMessages.categoryNotFoundWithId(categoryId)));
     }
 }
-
